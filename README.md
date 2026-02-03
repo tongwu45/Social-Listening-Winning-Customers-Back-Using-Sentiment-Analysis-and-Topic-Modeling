@@ -13,12 +13,15 @@ To use the LDA topic modeling approach to analyze customer perceptions (through 
 To design business strategies to resolve negative customer perceptions to “win customers back”.
 Before we roll out our analyses, let us make sure that all your files are organized and your R environment is set up.
 
-# Preparation and Set Up
+## **Preparation and Set Up**
 
-Create a folder (e.g., `topic`) and download `tweets.csv` into it. Then set your working directory and load the data.
+### **Step 1 — Organize files**
+Create a folder (e.g., `topic`) and download `tweets.csv` into it.
 
-> **Important:** Run only the line that matches your OS. Comment out the other `setwd()` line with `#`.
+> **Important:** Run only the `setwd()` line that matches your OS.  
+> Comment out the other one using `#`.
 
+### **Step 2 — Set working directory & load data (R code)**
 
 ```r
 # macOS
@@ -28,9 +31,9 @@ setwd("/Users/olivia/Downloads/Social Listening I")
 setwd("H:/downloads/topic")
 
 data <- read_csv("tweets.csv")
+```
 
-Expected output:
-
+```text
 ## Rows: 2025 Columns: 2
 ## ── Column specification ─────────────────────────────────────────
 ## Delimiter: ","
@@ -39,16 +42,17 @@ Expected output:
 ##
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
+```
 
 Now we are ready to go!
 
-1. Data
+# 1. Data
 The dataset we will be using for simplicity purpose will be a random sample of over 2000 tweets with the keyword “victoriassecret”, scrapped from Twitter during the period of 01/01/2020 to 31/12/2020. There are two columns in the data file, “id” and “text”.
 
 Let us select a few of the tweets in the data file and see what consumers have been talking about the brand in the past year:
-
+```r
 kable(data[c(20, 92, 100, 400, 990, 1500, 1700, 1800),])
+```
 id	text
 20	Check out what I just added to my closet on Poshmark: Victoria’s Secret zip up hooded sweatshirt. https://t.co/R3f8jN47N0 via @poshmarkapp #shopmycloset
 92	RT @HausofHilton: If you expect your girl to look like a Victoria secret model, make sure you look like a Calvin Klein model.
@@ -65,8 +69,9 @@ Bcs i have not so go…
 1800	RT @ma_ad_: Can’t tell if after we collided is sponsored by Victoria’s Secret or pornhub
 Two things that we notice from the above raw data:
 
-Consumer sentiments are quite diverse and divided towards Victoria’s Secret. Tweet 20, 100, and 400, for example, are consumers sharing about their recent purchase or product news (e.g., new launches). Tweet 1700 is about consumers enjoying and appreciating the brand. However, Tweet 92, 990, and 1800 are quite negative in terms of sentiment. Tweet 92 and 990, in particular, are a very typical tweets criticizing body shame and gender inequality issues arising from Victoria’s Secret’s marketing communications.
-In terms of the data, we observe many tweets consisting of information irrelevant to our analysis, such as “RT”, the twitter handle, punctuation, stopwords (i.e., and, or, the, etc), numbers, and emojis. These will add unnecessary noise to our data set which we need to remove during the pre-processing stage.
+1. Consumer sentiments are quite diverse and divided towards Victoria’s Secret. Tweet 20, 100, and 400, for example, are consumers sharing about their recent purchase or product news (e.g., new launches). Tweet 1700 is about consumers enjoying and appreciating the brand. However, Tweet 92, 990, and 1800 are quite negative in terms of sentiment. Tweet 92 and 990, in particular, are a very typical tweets criticizing body shame and gender inequality issues arising from Victoria’s Secret’s marketing communications.
+2. In terms of the data, we observe many tweets consisting of information irrelevant to our analysis, such as “RT”, the twitter handle, punctuation, stopwords (i.e., and, or, the, etc), numbers, and emojis. These will add unnecessary noise to our data set which we need to remove during the pre-processing stage.
+```r
 # Raw data cleaning--you can further adapt the codes below and add more rows to further clean the raw texts beyond what are done below. 
 
 # removing Tweet-specific terms like "RT" and "@"
@@ -88,7 +93,11 @@ text_cleaning_tokens$word <- gsub('[[:punct:]]+', '', text_cleaning_tokens$word)
 
 text_cleaning_tokens <- text_cleaning_tokens %>% filter(!(nchar(word)<=1))%>% 
   anti_join(stop_words)
+```
+```text
 ## Joining with `by = join_by(word)`
+```
+```r
 tokens <- text_cleaning_tokens %>% filter(!(word==""))
 tokens <- tokens %>% mutate(ind = row_number())
 tokens <- tokens %>% group_by(id) %>% mutate(ind = row_number()) %>%
@@ -99,9 +108,11 @@ tokens$text <- trimws(tokens$text)
 
 # Take a look at the processed texts for tweet 100 to tweet 120 in the new file: 
 #kable(tokens[c(100:120),])
-2. Sentiment Analysis: Lexicon-based (Dictionary-based) Approach
+```
+# 2. Sentiment Analysis: Lexicon-based (Dictionary-based) Approach
 Find the top 10 commonly used words in the set of tweets; this will give an overall picture of what the populations are most concerned about, and the extent to which they are engaged on these topics.
 
+```r
 text_cleaning_tokens %>%
   count(word,sort=TRUE) %>%
   top_n(10) %>%
@@ -114,12 +125,20 @@ text_cleaning_tokens %>%
   labs(x="Count",
        y="Unique words",
        title="Unique word counts found in the dataset")
+```
+```text
 ## Selecting by n
+```
+<img width="687" height="476" alt="截屏2026-02-02 下午11 58 15" src="https://github.com/user-attachments/assets/d8888fef-52c8-4403-bbc2-37427ee43753" />
+
  Perform sentiment analysis using the Bing lexicon and get_sentiments function from the tidytext package. There are many libraries, dictionaries and packages available in R to evaluate the emotion prevalent in a text. The tidytext and textdata packages have such word-to-emotion evaluation repositories. Three of the general purpose lexicons are Bing, AFINN and nrc (from the textdata package, as introduced in the lecture as well). To take a look at what each package contains, you can run the get_sentiments() function in R.
 
 Let’s first take a look at the Bing lexicons:
 
+```r
 get_sentiments("bing") %>% filter(sentiment=="positive")
+```
+```text
 ## # A tibble: 2,005 × 2
 ##    word        sentiment
 ##    <chr>       <chr>    
@@ -134,7 +153,11 @@ get_sentiments("bing") %>% filter(sentiment=="positive")
 ##  9 acclamation positive 
 ## 10 accolade    positive 
 ## # ℹ 1,995 more rows
+```
+```r
 get_sentiments("bing") %>% filter(sentiment=="negative")
+```
+```text
 ## # A tibble: 4,781 × 2
 ##    word        sentiment
 ##    <chr>       <chr>    
@@ -149,6 +172,7 @@ get_sentiments("bing") %>% filter(sentiment=="negative")
 ##  9 aborted     negative 
 ## 10 aborts      negative 
 ## # ℹ 4,771 more rows
+```
 In contrast to Bing, the AFINN lexicon assigns a “positive” or “negative” score to each word in its lexicon; further sentiment analysis will then add up the emotion score to determine overall expression. A score greater than zero indicates positive sentiment, while a score less than zero would mean negative overall emotion. A calculated score of zero indicates neutral sentiment (neither positive or negative).
 
 # You can change the values as you like; note that all values should be integers within the range of [-5,5]
@@ -406,3 +430,4 @@ Recently, we have seen Victoria’s Secret’s efforts to rebrand, for example, 
 Example of VS Rebranding Effort Example of VS Rebranding Effort
 
 Interestingly, another valuable insight that can be derived from the above analyses is that the brand Calvin Klein may be also accused of very similar issues by the consumers, since the name of the brand frequently appear in Topic 4. Calvin Klein definitely needs to be alerted about such trend in consumer sentiment, and preferably design effective marketing campaigns that showcase their recognition of issues like gender inequality and their serious efforts to rebrand.
+
