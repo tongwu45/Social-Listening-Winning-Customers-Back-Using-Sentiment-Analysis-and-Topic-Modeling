@@ -14,31 +14,33 @@ To design business strategies to resolve negative customer perceptions to “win
 Before we roll out our analyses, let us make sure that all your files are organized and your R environment is set up.
 
 # Preparation and Set Up
-Please follow the following steps:
 
-Create a folder and set working directory to that folder on your device,
-Download data needed for this tutorial onto your working directory.
-Let us create a folder in your computer and name the folder topic. And then let us download the data file (“tweet.csv”) needed for this tutorial. Please run only part of the following chunk of codes, depending on the operating system of your device. To avoid running the codes that are not applicable and receiving error messages, please add “#” before each line of non-applicable codes in the chunk below. For example, if you are using a Mac, you need to put “#” before code setwd(“H:/downloads/topic”).
+Create a folder (e.g., `topic`) and download `tweets.csv` into it. Then set your working directory and load the data.
+
+> **Important:** Run only the line that matches your OS. Comment out the other `setwd()` line with `#`.
+
 
 ```r
-# Please run the following codes depending on your operating system.
-
-# If you are using macOS and your folder is under "Downloads":
+# macOS
 setwd("/Users/olivia/Downloads/Social Listening I")
 
-# If you are using Windows and your folder is in H drive:
-# setwd("H:/downloads/topic")
+# Windows
+setwd("H:/downloads/topic")
 
-data <- readr::read_csv("tweets.csv")
+data <- read_csv("tweets.csv")
+
+Expected output:
 
 ## Rows: 2025 Columns: 2
-## ── Column specification ────────────────────────────────────────────────────────
+## ── Column specification ─────────────────────────────────────────
 ## Delimiter: ","
 ## chr (1): text
 ## dbl (1): id
-## 
+##
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+
 Now we are ready to go!
 
 1. Data
