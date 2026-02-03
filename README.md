@@ -1,0 +1,2 @@
+# Social-Listening-Winning-Customers-Back-Using-Sentiment-Analysis-and-Topic-Modeling
+Social listening tracks brand “pulse” on social media. This project uses Twitter data on Victoria’s Secret and applies LDA topic modeling to uncover what people discuss (e.g., diversity, body standards, cultural appropriation). It turns key topics into actionable brand and marketing recommendations to rebuild trust and loyalty.
